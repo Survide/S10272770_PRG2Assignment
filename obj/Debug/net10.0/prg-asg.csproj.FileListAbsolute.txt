@@ -1,0 +1,15 @@
+/home/survi/Projects/prg-asg/bin/Debug/net10.0/prg-asg
+/home/survi/Projects/prg-asg/bin/Debug/net10.0/prg-asg.deps.json
+/home/survi/Projects/prg-asg/bin/Debug/net10.0/prg-asg.runtimeconfig.json
+/home/survi/Projects/prg-asg/bin/Debug/net10.0/prg-asg.dll
+/home/survi/Projects/prg-asg/bin/Debug/net10.0/prg-asg.pdb
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.GeneratedMSBuildEditorConfig.editorconfig
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.AssemblyInfoInputs.cache
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.AssemblyInfo.cs
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.csproj.CoreCompileInputs.cache
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.sourcelink.json
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.dll
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/refint/prg-asg.dll
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.pdb
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/prg-asg.genruntimeconfig.cache
+/home/survi/Projects/prg-asg/obj/Debug/net10.0/ref/prg-asg.dll
