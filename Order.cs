@@ -16,15 +16,19 @@ public class Order
     public Customer FromCustomer {get; set;}
     public SpecialOffer Offer {get; set;}
 
-    public Order(SpecialOffer _offer, List<OrderedFoodItem> orderedFoodItems)
+    public Order(int orderId, DateTime orderDateTime, DateTime deliveryDateTime, string address, double total, string status, SpecialOffer offer, List<OrderedFoodItem> orderedFoodItems)
     {
-        OrderId = new Random().Next();
-        OrderDateTime = DateTime.Now;
-        OrderTotal = CalculateOrderTotal();
-        OrderStatus = "Pending";
+        OrderId = orderId;
+        OrderDateTime = orderDateTime;
+        OrderTotal = total;
+        OrderStatus = status;
+
+        DeliveryDateTime = deliveryDateTime;
+        DeliveryAddress = address;
+        OrderPaymentMethod = "";
         OrderPaid = false;
-        
-        Offer = _offer;
+
+        Offer = offer;
         OrderedFoodItems = orderedFoodItems;
     }
 
