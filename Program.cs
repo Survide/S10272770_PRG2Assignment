@@ -33,10 +33,20 @@ void LoadFoodItems()
         string[] records = File.ReadAllLines("data/fooditems.csv").Skip(1).ToArray();
         foreach (string record in records)
         {
-            string[] test = record.Split('"'); // ["r005,greek salad","Cucumber ...", ",10"]
-            foreach (string tes in test)
+            // theres a record that has "" in description.
+            if (record.Contains('"'))
             {
-                Console.WriteLine($"test {tes}");
+                string[] splitDetails = record.Split('"');
+                string name = splitDetails[0].Substring(0, splitDetails[0].Length - 1).Split(",")[1];
+                string description = splitDetails[1];
+                string stringPrice = splitDetails[2].Substring(1);
+                if (!double.TryParse(stringPrice, out double splitPrice))
+                {
+                    Console.WriteLine($"Could not parse price to double in line: {record}");
+                    continue;
+                }
+                foodItems.Add(new FoodItem(name, description, splitPrice, ""));
+                continue;
             }
             string[] details = record.Split(",");
             if (!double.TryParse(details[3], out double price))
@@ -44,7 +54,7 @@ void LoadFoodItems()
                 Console.WriteLine($"Could not parse price to double in line: {record}");
                 continue;
             }
-            foodItems.Add(new FoodItem(details[0], details[1], price, details[3]));
+            foodItems.Add(new FoodItem(details[1], details[2], price, ""));
         }
     }
     catch (FileNotFoundException ex)
@@ -61,7 +71,7 @@ void InitializeGruberoo()
 {
     Console.WriteLine("Welcome to the Gruberoo Food Delivery System");
     LoadRestaurants();
-    // LoadFoodItems(); WIP
+    LoadFoodItems();
 }
 
 InitializeGruberoo();
