@@ -1,8 +1,11 @@
 ﻿
+using System.Globalization;
 using prg_asg;
 
-List<Restaurant> restaurants = [];
+Dictionary<string, Restaurant> restaurants = [];
 List<FoodItem> foodItems = [];
+List<Order> orders = [];
+Dictionary<Customer, Order> customerOrders = []; // stores the customer: their order
 
 void LoadRestaurants()
 {
@@ -12,7 +15,7 @@ void LoadRestaurants()
         foreach (string record in records)
         {
             string[] details = record.Split(",");
-            restaurants.Add(new Restaurant(details[0], details[1], details[2]));
+            restaurants.Add(details[0], new Restaurant(details[0], details[1], details[2]));
         }
     }
     catch (FileNotFoundException ex)
@@ -74,6 +77,39 @@ void LoadCustomers()
 
 void LoadOrders()
 {
+    try
+    {
+        string[] records = File.ReadAllLines("data/orders.csv").Skip(1).ToArray();
+        foreach (string record in records)
+        {
+            string[] d = record.Split(",");
+
+            (string orderId, string customerEmail, string restaurantId, string deliveryDate, string deliveryTime, string deliveryAddress, string createdDateTime, string totalAmount, string status, string itemsRaw) = (d[0], d[1], d[2], d[3],d[4],d[5],d[6], d[7], d[8], d[9]);
+
+            List<OrderedFoodItem> foodItems = [];
+            string[] itemsParsed = itemsRaw.Split("|");
+            Restaurant res = restaurants[restaurantId];
+            // TODO: get food item based on Restaurant.Menu.FoodItem
+            for(int i = 0; i < itemsParsed.Length; i++) {
+                string[] s = itemsParsed[i].Split(",");
+                (string name, int qty) = (s[0], int.Parse(s[1]));
+                // OrderedFoodItem item = new(name, "", );
+            }
+
+            // OrderId,CustomerEmail,RestaurantId,DeliveryDate,DeliveryTime,DeliveryAddress,CreatedDateTime,TotalAmount,Status,Items
+            Order newOrder = new Order(int.Parse(orderId), DateTime.ParseExact(createdDateTime, "MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture), DateTime.ParseExact(deliveryDate + " " + deliveryTime, "MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture), deliveryAddress, double.Parse(totalAmount), status, null, foodItems);
+        }
+    }
+    catch (FileNotFoundException ex)
+    {
+        Console.WriteLine("Restaurants file not found!");
+        Console.WriteLine($"Error message {ex.Message}");
+    }
+    finally
+    {
+        Console.WriteLine($"{restaurants.Count()} restaurants loaded!");
+    }
+
 }
 
 void MainMenu()
