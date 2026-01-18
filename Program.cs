@@ -183,6 +183,18 @@ void LoadOrders()
 
 void ListRestaurantsAndMenu()
 {
+    Console.WriteLine("All Restaurants and Menu Items");
+    Console.WriteLine("==============================");
+
+    foreach(Restaurant restaurant in restaurants.Values) {
+        Console.WriteLine($"Restaurant: {restaurant.RestaurantName} ({restaurant.RestaurantId})");
+         
+        // FIXME: Assume only got 1 menu
+        foreach(FoodItem item in restaurant.Menus[0].FoodItems) {
+            Console.WriteLine($"  - {item.ItemName}: {item.ItemDesc} - ${item.ItemPrice:f2}");
+        }
+        Console.WriteLine();
+    }
 }
 
 void ListAllOrders()
@@ -209,7 +221,7 @@ void MainMenu()
 {
     while (true)
     {
-        Console.WriteLine("===== Gruberoo Food Delivery System =====");
+        Console.WriteLine("\n===== Gruberoo Food Delivery System =====");
         Console.WriteLine("1. List all restaurants and menu items");
         Console.WriteLine("2. List all orders");
         Console.WriteLine("3. Create a new order");
