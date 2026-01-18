@@ -268,6 +268,7 @@ void InitializeGruberoo()
     LoadFoodItems();
     LoadCustomers();
     LoadOrders();
+    MainMenu();
 }
 
 InitializeGruberoo();
