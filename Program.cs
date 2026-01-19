@@ -437,7 +437,8 @@ void ProcessOrder()
                 {
                     order.OrderStatus = "Rejected";
                     refundStack.Add(order);
-                    Console.WriteLine($"Order {order.OrderId} rejected. Status: Rejected. Amount will be refunded");
+                    Console.WriteLine(
+                        $"Order {order.OrderId} rejected. Status: Rejected. ${order.OrderTotal} has been refunded");
                 }
                 else if (option == "S")
                 {
