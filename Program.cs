@@ -182,17 +182,18 @@ void LoadOrders()
                 foodItems
             );
 
-        // link the relations
-        newOrder.FromRestaurant = restaurants[restaurantId];
-        newOrder.FromCustomer = customers[customerEmail];
+            // link the relations
+            newOrder.FromRestaurant = restaurants[restaurantId];
+            newOrder.FromCustomer = customers[customerEmail];
 
-        // place them into the Restaurant’s Order Queue and the Customer’s Order List
-        thisRest.Orders.Enqueue(newOrder);
-        thisCust.AddOrder(newOrder);
+            // place them into the Restaurant’s Order Queue and the Customer’s Order List
+            thisRest.Orders.Enqueue(newOrder);
+            thisCust.AddOrder(newOrder);
 
-        orders[orderId] = newOrder;
+            orders[orderId] = newOrder;
+        }
+        Console.WriteLine($"{orders.Count} orders loaded!");
     }
-    Console.WriteLine($"{orders.Count} orders loaded!");
 }
 
 void ListRestaurantsAndMenu()
@@ -450,8 +451,10 @@ void ModifyOrder()
 
     // display all orders that are pending for this customer
     Console.WriteLine("Pending Orders: ");
-    foreach(Order order in thisCust.Orders) {
-        if (order.OrderStatus == "Pending") {
+    foreach (Order order in thisCust.Orders)
+    {
+        if (order.OrderStatus == "Pending")
+        {
             // FIXME: duplicate orderIds  
             Console.WriteLine(order.OrderId);
         }
@@ -471,7 +474,8 @@ void ModifyOrder()
     // Console.WriteLine("Modify: [1] Items [2] Address [3] Delivery Time: ");
     string option = Helper.GetValidInput("\nModify: [1] Items [2] Address [3] Delivery Time: ", "Invalid option entered.", s => s == "1" || s == "2" || s == "3");
 
-    if (option == "1") {
+    if (option == "1")
+    {
         // items 
         // FIXME: Assume that modify items only modifies quantity 
         List<OrderedFoodItem> orderedFoodItems = thisOrder.OrderedFoodItems;
@@ -483,43 +487,53 @@ void ModifyOrder()
         double priceDiff = orderedFoodItems[itemNumber].ItemPrice * Math.Abs(newQty - currentQty);
 
         // prompt the user to pay if there is an increase in the order total 
-        if (newQty > currentQty) {
+        if (newQty > currentQty)
+        {
             string ifPayment = Helper.GetValidInput("Proceed to payment? [Y/N]: ", "Invalid input.", s => s.Equals("Y", StringComparison.OrdinalIgnoreCase) || s.Equals("N", StringComparison.OrdinalIgnoreCase)).ToUpper();
-            if(ifPayment == "N") return;
+            if (ifPayment == "N") return;
 
             // prompt user for payment method 
-            string[] validOptions = [ "CC", "PP", "CD" ]; 
+            string[] validOptions = ["CC", "PP", "CD"];
 
             string paymentMethod = Helper.GetValidInput("\nPayment method: [CC] Credit Card / [PP] PayPal / [CD] Cash on Delivery: ", "Invalid payment method entered.", s => validOptions.Contains(s, StringComparer.OrdinalIgnoreCase));
             thisOrder.OrderPaymentMethod = paymentMethod;
-        } else if (newQty < currentQty){
+        }
+        else if (newQty < currentQty)
+        {
             // FIXME: Assume that there will be a refund 
             Helper.PrintColour(ConsoleColor.Green, $"${priceDiff:f2} will be refunded.");
         }
 
         // remove this order if the quantity is 0 
-        if (newQty == 0) {
+        if (newQty == 0)
+        {
             thisOrder.RemoveOrderedFoodItem(orderedFoodItems[itemNumber]);
-        } else {
+        }
+        else
+        {
             thisOrder.OrderedFoodItems[itemNumber].QtyOrdered = newQty;
         }
 
         Helper.PrintColour(ConsoleColor.Green, $"Order {thisOrder.OrderId} updated. Updated food items: ", () => thisOrder.DisplayOrderedFoodItems());
 
-    } else if (option == "2") {
+    }
+    else if (option == "2")
+    {
         // address 
         string address = Helper.GetValidInput("Enter New Delivery Address: ", "Invalid address entered.");
         thisOrder.DeliveryAddress = address;
 
         // confirmation message
         Helper.PrintColour(ConsoleColor.Green, $"Order {thisOrder.OrderId} updated. New Address: {address}");
-    } else {
+    }
+    else
+    {
         // delivery time 
-        string time = Helper.GetValidInput("Enter Delivery Time (hh:mm): ", "Invalid time entered.", s => DateTime.TryParseExact(s, "HH:mm",    CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+        string time = Helper.GetValidInput("Enter Delivery Time (hh:mm): ", "Invalid time entered.", s => DateTime.TryParseExact(s, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
         string[] timeSplit = time.Split(":");
         (int hours, int minutes) = (int.Parse(timeSplit[0]), int.Parse(timeSplit[1]));
 
-        thisOrder.DeliveryDateTime = thisOrder.DeliveryDateTime.Date + new TimeSpan(hours, minutes, 0);        
+        thisOrder.DeliveryDateTime = thisOrder.DeliveryDateTime.Date + new TimeSpan(hours, minutes, 0);
 
         // confirmation message
         Helper.PrintColour(ConsoleColor.Green, $"Order {thisOrder.OrderId} updated. New Delivery Time: {time}");
