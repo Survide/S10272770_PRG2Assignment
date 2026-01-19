@@ -192,8 +192,8 @@ void LoadOrders()
 
             orders[orderId] = newOrder;
         }
-        Console.WriteLine($"{orders.Count} orders loaded!");
     }
+    Console.WriteLine($"{orders.Count} orders loaded!");
 }
 
 void ListRestaurantsAndMenu()
@@ -354,6 +354,13 @@ void CreateOrder()
 
 void ProcessOrder()
 {
+    Dictionary<string, string> errorMessageDict = new Dictionary<string, string>
+    {
+      {"C", "Pending"},
+      {"R", "Pending"},
+      {"S", "Cancelled"},
+      {"D", "Preparing"},
+    };
     while (true)
     {
         Console.WriteLine("Process Order");
@@ -376,66 +383,75 @@ void ProcessOrder()
             Console.ResetColor();
             continue;
         }
-        foreach (Order order in restaurants[restaurantId].Orders)
+        int orderCounter = 1;
+        while (orderCounter < restaurants[restaurantId].Orders.Count)
         {
+            Order order = restaurants[restaurantId].Orders.ElementAt(orderCounter);
+
+            // Skips if don't have Pending/Cancelled/Preparing
+            if (!errorMessageDict.ContainsValue(order.OrderStatus))
+            {
+                orderCounter++;
+                continue;
+            }
+
             Console.WriteLine($"Order {order.OrderId}");
             Console.WriteLine($"Customer {order.FromCustomer.CustomerName}");
             Console.WriteLine("Ordered Items: ");
-            int counter = 1;
+            int foodItemCounter = 1;
             foreach (OrderedFoodItem orderedFoodItem in order.OrderedFoodItems)
             {
-                Console.WriteLine($"{counter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}");
-                counter++;
+                Console.WriteLine($"{foodItemCounter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}");
+                foodItemCounter++;
             }
             Console.WriteLine($"Delivery date/time: {order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm")}");
             Console.WriteLine($"Total Amount: {order.OrderTotal.ToString("F2")}");
             Console.WriteLine($"Order Status: {order.OrderStatus}");
-
             Console.Write("[C]onfirm / [R]eject / [S]kip / [D]eliver: ");
+
             string? option = Console.ReadLine();
-            if (option == null)
+            if (option == null || !errorMessageDict.ContainsKey(option))
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("Invalid option");
                 Console.ResetColor();
-                continue;
             }
-            if (option == "C")
+            else
             {
-                if (order.OrderStatus == "Pending")
+                // Checks for corresponding status. Checks this first to prevent nested ifs 
+                if (order.OrderStatus != errorMessageDict[option])
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine(
+                        $"Order {order.OrderId} does not have status {errorMessageDict[option]}. Unable to proceed");
+                    Console.ResetColor();
+                    Console.WriteLine();
+                    continue;
+                }
+                if (option == "C")
                 {
                     order.OrderStatus = "Preparing";
                     Console.WriteLine($"Order {order.OrderId} confirmed. Status: Preparing");
                 }
-            }
-            else if (option == "R")
-            {
-                if (order.OrderStatus == "Pending")
+                else if (option == "R")
                 {
                     order.OrderStatus = "Rejected";
                     refundStack.Add(order);
                     Console.WriteLine($"Order {order.OrderId} rejected. Status: Rejected. Amount will be refunded");
                 }
-            }
-            else if (option == "S")
-            {
-                if (order.OrderStatus != "Cancelled")
+                else if (option == "S")
                 {
-                    // what am i even suppose to be doing here?
-                    order.OrderStatus = "Cancelled";
                     refundStack.Add(order);
-                    Console.WriteLine($"Order {order.OrderId} skipped. Status: Cancelled");
+                    Console.WriteLine($"Order {order.OrderId} skipped. Status: {order.OrderStatus}");
                 }
-            }
-            else if (option == "D")
-            {
-                if (order.OrderStatus == "Preparing")
+                else if (option == "D")
                 {
                     order.OrderStatus = "Delivered";
                     Console.WriteLine($"Order {order.OrderId} delivered. Status: Delivered");
                 }
+                orderCounter++;
             }
-
+            Console.WriteLine();
         }
     }
 
@@ -564,11 +580,13 @@ void MainMenu()
         try
         {
             option = Convert.ToInt16(Console.ReadLine());
+            Console.WriteLine();
         }
-        catch (FormatException ex)
+        catch (FormatException)
         {
-            Console.WriteLine("Could not convert to Int16");
-            Console.WriteLine($"Error message: {ex.Message}");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Invalid input.");
+            Console.ResetColor();
         }
         if (option == 0)
         {
