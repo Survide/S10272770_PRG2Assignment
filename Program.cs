@@ -6,6 +6,7 @@ List<FoodItem> foodItems = [];
 Dictionary<string, Menu> menus = []; // restaurantId: menu
 Dictionary<string, Customer> customers = []; // email: customer
 Dictionary<string, Order> orders = []; // orderId: order
+List<Order> refundStack = [];
 
 void LoadRestaurants()
 {
@@ -200,11 +201,13 @@ void ListRestaurantsAndMenu()
     Console.WriteLine("All Restaurants and Menu Items");
     Console.WriteLine("==============================");
 
-    foreach(Restaurant restaurant in restaurants.Values) {
+    foreach (Restaurant restaurant in restaurants.Values)
+    {
         Console.WriteLine($"Restaurant: {restaurant.RestaurantName} ({restaurant.RestaurantId})");
-         
+
         // FIXME: Assume only got 1 menu
-        foreach(FoodItem item in restaurant.Menus[0].FoodItems) {
+        foreach (FoodItem item in restaurant.Menus[0].FoodItems)
+        {
             Console.WriteLine($"  - {item.ItemName}: {item.ItemDesc} - ${item.ItemPrice:f2}");
         }
         Console.WriteLine();
@@ -265,7 +268,8 @@ void CreateOrder()
     Console.WriteLine("\nAvailable Food Items: ");
     // FIXME: Assume only got 1 menu
     int itemNumber = 1;
-    foreach(FoodItem item in thisRest.Menus[0].FoodItems) {
+    foreach (FoodItem item in thisRest.Menus[0].FoodItems)
+    {
         Console.WriteLine($"{itemNumber}. {item.ItemName} - ${item.ItemPrice:f2}");
         itemNumber++;
     }
@@ -273,71 +277,74 @@ void CreateOrder()
     // allow the user to select multiple items and quantity
     List<OrderedFoodItem> orderItems = [];
     List<string> itemsParsed = []; // for csv storing
-    
+
     int itemsCount = thisRest.Menus[0].FoodItems.Count;
     itemNumber = -1;
-    while (itemNumber != 0) {
+    while (itemNumber != 0)
+    {
         itemNumber = int.Parse(Helper.GetValidInput("Enter item number (0 to finish): ", "Invalid item number entered", s => int.TryParse(s, out int val) && val >= 0 && val <= itemsCount));
-    
-        if(itemNumber == 0) break;
-   
+
+        if (itemNumber == 0) break;
+
         int quantity = int.Parse(Helper.GetValidInput("Enter quantity: ", "Invalid quantity entered", s => int.TryParse(s, out int val) && val > 0));
-        
+
         // create new OrderedFoodItems
         // FIXME: Assume only got 1 menu 
         FoodItem foodItem = thisRest.Menus[0].FoodItems[itemNumber - 1];
         OrderedFoodItem orderedFoodItem = new(foodItem, quantity);
         orderItems.Add(orderedFoodItem);
-        
+
         // for csv storing
         itemsParsed.Add($"{foodItem.ItemName},{quantity}");
     }
 
     // apply special requests 
     string ifReq = Helper.GetValidInput("Add special request? [Y/N]: ", "Invalid input.", s => s.ToUpper() == "Y" || s.ToUpper() == "N").ToUpper();
-    if (ifReq == "Y") {
+    if (ifReq == "Y")
+    {
         // FIXME: Not sure what request is for
         string request = Helper.GetValidInput("Enter request: ", "Request cannot be empty.");
     }
-  
+
     // create new Order 
-    Order newOrder = new() {
+    Order newOrder = new()
+    {
         DeliveryAddress = address,
         DeliveryDateTime = dateTime,
         OrderedFoodItems = orderItems,
         OrderDateTime = DateTime.Now,
-        
+
         // For linking 
         FromRestaurant = thisRest,
         FromCustomer = thisCust,
     };
     double orderTotal = newOrder.CalculateOrderTotal();
-    
+
     // calculate order total
     Console.WriteLine($"\nOrder Total: ${orderTotal:f2} + $5.00 (delivery) = ${orderTotal + 5:f2}");
 
     string ifPayment = Helper.GetValidInput("Proceed to payment? [Y/N]: ", "Invalid input.", s => s.Equals("Y", StringComparison.OrdinalIgnoreCase) || s.Equals("N", StringComparison.OrdinalIgnoreCase)).ToUpper();
-    if(ifPayment == "N") return;
+    if (ifPayment == "N") return;
 
     // prompt user for payment method 
-    string[] validOptions = [ "CC", "PP", "CD" ]; 
+    string[] validOptions = ["CC", "PP", "CD"];
 
     string paymentMethod = Helper.GetValidInput("\nPayment method: [CC] Credit Card / [PP] PayPal / [CD] Cash on Delivery: ", "Invalid payment method entered.", s => validOptions.Contains(s, StringComparer.OrdinalIgnoreCase));
     newOrder.OrderPaymentMethod = paymentMethod;
 
     // update status 
     newOrder.OrderStatus = "Pending";
-    
+
     // assign new order id 
     newOrder.OrderId = 1000 + orders.Count + 1;
     orders[newOrder.OrderId.ToString()] = newOrder;
-    
+
     thisRest.Orders.Enqueue(newOrder);
     thisCust.Orders.Add(newOrder);
 
     // create csv item
-    string orderStr = $"{newOrder.OrderId},{newOrder.FromCustomer.EmailAddress},{newOrder.FromRestaurant.RestaurantId},{date},{time},{address},{newOrder.OrderDateTime:dd/MM/yyyy HH:mm},{orderTotal},{newOrder.OrderStatus},\"{string.Join("|",itemsParsed)}\"";
-    
+    string orderStr = $"{newOrder.OrderId},{newOrder.FromCustomer.EmailAddress},{newOrder.FromRestaurant.RestaurantId},{date},{time},{address},{newOrder.OrderDateTime:dd/MM/yyyy HH:mm},{orderTotal},{newOrder.OrderStatus},\"{string.Join("|", itemsParsed)}\"";
+
     // append order to orders.csv 
     File.AppendAllText("data/orders.csv", orderStr);
 
@@ -348,6 +355,91 @@ void CreateOrder()
 
 void ProcessOrder()
 {
+    while (true)
+    {
+        Console.WriteLine("Process Order");
+        Console.WriteLine("=============");
+
+        Console.Write("Enter Restaurant ID: ");
+        string? restaurantId = Console.ReadLine();
+        if (restaurantId == null)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Invalid Restaurand ID");
+            Console.ResetColor();
+            continue;
+        }
+        Console.WriteLine();
+        if (!restaurants.ContainsKey(restaurantId))
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Invalid Restaurant ID");
+            Console.ResetColor();
+            continue;
+        }
+        foreach (Order order in restaurants[restaurantId].Orders)
+        {
+            Console.WriteLine($"Order {order.OrderId}");
+            Console.WriteLine($"Customer {order.FromCustomer.CustomerName}");
+            Console.WriteLine("Ordered Items: ");
+            int counter = 1;
+            foreach (OrderedFoodItem orderedFoodItem in order.OrderedFoodItems)
+            {
+                Console.WriteLine($"{counter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}");
+                counter++;
+            }
+            Console.WriteLine($"Delivery date/time: {order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm")}");
+            Console.WriteLine($"Total Amount: {order.OrderTotal.ToString("F2")}");
+            Console.WriteLine($"Order Status: {order.OrderStatus}");
+
+            Console.Write("[C]onfirm / [R]eject / [S]kip / [D]eliver: ");
+            string? option = Console.ReadLine();
+            if (option == null)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("Invalid option");
+                Console.ResetColor();
+                continue;
+            }
+            if (option == "C")
+            {
+                if (order.OrderStatus == "Pending")
+                {
+                    order.OrderStatus = "Preparing";
+                    Console.WriteLine($"Order {order.OrderId} confirmed. Status: Preparing");
+                }
+            }
+            else if (option == "R")
+            {
+                if (order.OrderStatus == "Pending")
+                {
+                    order.OrderStatus = "Rejected";
+                    refundStack.Add(order);
+                    Console.WriteLine($"Order {order.OrderId} rejected. Status: Rejected. Amount will be refunded");
+                }
+            }
+            else if (option == "S")
+            {
+                if (order.OrderStatus != "Cancelled")
+                {
+                    // what am i even suppose to be doing here?
+                    order.OrderStatus = "Cancelled";
+                    refundStack.Add(order);
+                    Console.WriteLine($"Order {order.OrderId} skipped. Status: Cancelled");
+                }
+            }
+            else if (option == "D")
+            {
+                if (order.OrderStatus == "Preparing")
+                {
+                    order.OrderStatus = "Delivered";
+                    Console.WriteLine($"Order {order.OrderId} delivered. Status: Delivered");
+                }
+            }
+
+        }
+    }
+
 }
 
 void ModifyOrder()
