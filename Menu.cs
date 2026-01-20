@@ -6,12 +6,12 @@ public class Menu
     public string MenuName { get; set; }
     public List<FoodItem> FoodItems { get; set; }
 
-    public Menu(string menuId, string menuName, List<FoodItem> foodItems)
+    public Menu(string menuId, string menuName)
     {
         MenuId = menuId;
         MenuName = menuName;
 
-        FoodItems = foodItems;
+        FoodItems = [];
     }
 
     public void AddFoodItem(FoodItem foodItem)

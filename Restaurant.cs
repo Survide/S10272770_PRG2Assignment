@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace prg_asg;
+﻿namespace prg_asg;
 
 public class Restaurant
 {

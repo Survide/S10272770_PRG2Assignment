@@ -2,11 +2,9 @@
 using prg_asg;
 
 Dictionary<string, Restaurant> restaurants = [];
-List<FoodItem> foodItems = [];
-Dictionary<string, Menu> menus = []; // restaurantId: menu
 Dictionary<string, Customer> customers = []; // email: customer
 Dictionary<string, Order> orders = []; // orderId: order
-List<Order> refundStack = [];
+Stack<Order> refundStack = [];
 
 void LoadRestaurants()
 {
@@ -33,6 +31,8 @@ void LoadRestaurants()
 void LoadFoodItems()
 {
     string[] records = [];
+    List<FoodItem> foodItems = [];
+    Dictionary<string, Menu> menus = []; // restaurantId: menu
     try
     {
         records = [.. File.ReadAllLines("data/fooditems.csv").Skip(1)];
@@ -78,11 +78,12 @@ void LoadFoodItems()
         foodItems.Add(foodItem);
         if (menus.ContainsKey(restaurantId))
         {
-            menus[restaurantId].FoodItems.Add(foodItem);
+            menus[restaurantId].AddFoodItem(foodItem);
         }
         else
         {
-            menus.Add(restaurantId, new Menu(restaurantId, "Main Menu", [foodItem]));
+            menus.Add(restaurantId, new Menu(restaurantId, "Main Menu"));
+            menus[restaurantId].AddFoodItem(foodItem);
         }
     }
     foreach (KeyValuePair<string, Menu> kvp in menus)
@@ -432,13 +433,13 @@ void ProcessOrder()
                 else if (option == "R")
                 {
                     order.OrderStatus = "Rejected";
-                    refundStack.Add(order);
+                    refundStack.Append(order);
                     Console.WriteLine(
                         $"Order {order.OrderId} rejected. Status: Rejected. ${order.OrderTotal} has been refunded");
                 }
                 else if (option == "S")
                 {
-                    refundStack.Add(order);
+                    refundStack.Append(order);
                     Console.WriteLine($"Order {order.OrderId} skipped. Status: {order.OrderStatus}");
                 }
                 else if (option == "D")
@@ -613,7 +614,7 @@ void DeleteOrder()
         if (confirm == "Y")
         {
             order.OrderStatus = "Cancelled";
-            refundStack.Add(order);
+            refundStack.Append(order);
             Console.WriteLine(
                 $"Order {order.OrderId} cancelled. Refund of ${order.OrderTotal.ToString("F2")} processed.");
         }

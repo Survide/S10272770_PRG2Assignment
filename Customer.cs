@@ -6,7 +6,7 @@ public class Customer
     public string CustomerName { get; set; }
     public List<Order> Orders { get; set; } = [];
 
-    public Customer(string emailAddress, string customerName) 
+    public Customer(string emailAddress, string customerName)
     {
         EmailAddress = emailAddress;
         CustomerName = customerName;
@@ -27,7 +27,11 @@ public class Customer
     {
         bool removed = Orders.Remove(order);
         return removed;
-        // return Orders.Remove(order);
+    }
+
+    public override string ToString()
+    {
+        return "Email Address: " + EmailAddress + " Customer Name: " + CustomerName;
     }
 
 }
