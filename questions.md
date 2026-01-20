@@ -9,6 +9,8 @@
 5. In feature 6, theres a Refund Stack. When and where will that be used? Will it be functional and return customer their money? or is it just for decoration?
 
 6. In feature 6, if skipping order and check of order status is "Cancelled".
-    Do we need to modify order to "Cancelled"? technically by 'skipping', just means leave it unhandled.
+   Do we need to modify order to "Cancelled"? technically by 'skipping', just means leave it unhandled.
 
 7. Are helper functions allowed?
+
+8. In the writeup, it says "Gruberoo charges a fee of 30% for each order". But in the sample of "create order", there wasn't this 30%. is this 30% supposed to be included or is it 30% taken from the restaurants

@@ -36,38 +36,44 @@ public class Order
 
         FromCustomer = fromCustomer;
         FromRestaurant = fromRestaurant;
+        Offer = offer;
 
         DeliveryDateTime = deliveryDateTime;
         DeliveryAddress = address;
         OrderPaymentMethod = "";
         OrderPaid = false;
 
-        Offer = offer;
         OrderedFoodItems = orderedFoodItems;
     }
 
     // for the creation of newOrder
-    public Order() {}
-
+    public Order()
+    {
+        OrderedFoodItems = [];
+    }
 
     public double CalculateOrderTotal()
     {
         double total = 0;
         foreach (OrderedFoodItem orderedFoodItem in OrderedFoodItems)
         {
-            total += orderedFoodItem.CalculateSubtotal();
+            total += orderedFoodItem.SubTotal;
         }
-        return total;
+        // inclusive of 30% from Gruberoo and $5 delivery fee
+        return total * 1.3 + 5;
     }
+
     public void AddOrderedFoodItem(OrderedFoodItem orderedFoodItem)
     {
         OrderedFoodItems.Add(orderedFoodItem);
     }
+
     public bool RemoveOrderedFoodItem(OrderedFoodItem orderedFoodItem)
     {
         bool removed = OrderedFoodItems.Remove(orderedFoodItem);
         return removed;
     }
+
     public void DisplayOrderedFoodItems()
     {
         int itemNumber = 1;
@@ -77,18 +83,24 @@ public class Order
             itemNumber++;
         }
     }
+
     public override string ToString()
     {
-        return
-          "OrderId: " + OrderId +
-          " OrderDateTime: " + OrderDateTime +
-          " OrderTotal: " + OrderTotal +
-          " OrderStatus: " + OrderStatus +
-          " DeliveryDateTime: " + DeliveryDateTime +
-          " DeliveryAddress: " + DeliveryAddress +
-          " OrderPaymentMethod: " + OrderPaymentMethod +
-          " OrderPaid: " + OrderPaid;
+        return "OrderId: "
+            + OrderId
+            + " OrderDateTime: "
+            + OrderDateTime
+            + " OrderTotal: "
+            + OrderTotal
+            + " OrderStatus: "
+            + OrderStatus
+            + " DeliveryDateTime: "
+            + DeliveryDateTime
+            + " DeliveryAddress: "
+            + DeliveryAddress
+            + " OrderPaymentMethod: "
+            + OrderPaymentMethod
+            + " OrderPaid: "
+            + OrderPaid;
     }
-
-
 }
