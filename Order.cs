@@ -59,8 +59,8 @@ public class Order
         {
             total += orderedFoodItem.SubTotal;
         }
-        // inclusive of 30% from Gruberoo and $5 delivery fee
-        return total * 1.3 + 5;
+        // inclusive of $5 delivery fee
+        return total + 5;
     }
 
     public void AddOrderedFoodItem(OrderedFoodItem orderedFoodItem)
