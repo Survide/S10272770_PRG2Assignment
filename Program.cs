@@ -202,6 +202,7 @@ void LoadOrders()
             null,
             foodItems
         );
+        newOrder.OrderTotal = newOrder.CalculateOrderTotal();
 
         // place them into the Restaurant’s Order Queue and the Customer’s Order List
         thisRest.Orders.Enqueue(newOrder);
@@ -396,9 +397,8 @@ void CreateOrder()
     newOrder.OrderTotal = newOrder.CalculateOrderTotal();
 
     // calculate order total
-    // FIXME: Assume that we charge 30%
     Console.WriteLine(
-        $"\nOrder Total: ${(newOrder.OrderTotal - 5) / 1.3:f2} + 30% + $5.00 (delivery) = ${newOrder.OrderTotal:f2}"
+        $"\nOrder Total: ${newOrder.OrderTotal - 5:f2} + 30% + $5.00 (delivery) = ${newOrder.OrderTotal:f2}"
     );
 
     string ifPayment = Helper
@@ -798,6 +798,47 @@ void DeleteOrder()
     }
 }
 
+void DisplayTotalOrderAmount()
+{
+    double totalOrderAmount = 0,
+        totalRefunds = 0;
+    foreach (Restaurant thisRest in restaurants.Values)
+    {
+        double orderAmt = 0,
+            refunds = 0;
+        // retrieve all successful orders (with status "Delivered")
+        foreach (Order order in thisRest.Orders)
+        {
+            if (order.OrderStatus == "Delivered")
+            {
+                // remove delivery fee
+                orderAmt += order.OrderTotal - 5;
+            }
+        }
+        // get the refunded/to be refunded orders for this restaurant
+        foreach (Order order in refundStack)
+        {
+            if (order.FromRestaurant.RestaurantId == thisRest.RestaurantId)
+            {
+                refunds += order.OrderTotal - 5;
+            }
+        }
+        totalOrderAmount += orderAmt;
+        totalRefunds += refunds;
+
+        Console.WriteLine($"\nRestaurant Id: {thisRest.RestaurantId}");
+        Console.WriteLine($"Total order amount: ${orderAmt:f2}");
+        Console.WriteLine($"Total refund amount: ${refunds:f2}");
+    }
+
+    Console.WriteLine("\nFor all Restaurants,");
+    Console.WriteLine($"Total order amount: ${totalOrderAmount:f2}");
+    Console.WriteLine($"Total refund amount: ${totalRefunds:f2}");
+
+    // FIXME: Assume that Gruberoo does not earn the $5 delivery fee
+    Console.WriteLine($"Total amount that Gruberoo earns: ${totalOrderAmount * 0.3:f2}");
+}
+
 void MainMenu()
 {
     while (true)
@@ -810,6 +851,7 @@ void MainMenu()
         Console.WriteLine("4. Process an order");
         Console.WriteLine("5. Modify an existing order");
         Console.WriteLine("6. Delete an existing order");
+        Console.WriteLine("8. Display total order amount");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
 
@@ -852,6 +894,10 @@ void MainMenu()
         else if (option == 6)
         {
             DeleteOrder();
+        }
+        else if (option == 8)
+        {
+            DisplayTotalOrderAmount();
         }
     }
 }
