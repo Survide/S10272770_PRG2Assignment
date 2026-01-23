@@ -802,29 +802,6 @@ void BulkProcessOrders()
 {
     while (true)
     {
-        // Console.Write("Enter a date (dd/mm/yyyy): ");
-        // string? inputDate = Console.ReadLine();
-        // if (inputDate == null)
-        // {
-        //     Console.ForegroundColor = ConsoleColor.DarkRed;
-        //     Console.WriteLine("Invalid date input.");
-        //     Console.ResetColor();
-        //     continue;
-        // }
-        // bool s = DateTime.TryParseExact(
-        //         inputDate,
-        //         "dd/MM/yyyy",
-        //         CultureInfo.InvariantCulture,
-        //         DateTimeStyles.None,
-        //         out DateTime date
-        //     );
-        // if (!s)
-        // {
-        //     Console.ForegroundColor = ConsoleColor.DarkRed;
-        //     Console.WriteLine("Invalid date input.");
-        //     Console.ResetColor();
-        //     continue;
-        // }
         DateTime today = DateTime.Now;
         Console.WriteLine($"{today.Day}/{today.Month}/{today.Year}");
         List<Order> orders = [];
