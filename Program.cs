@@ -802,51 +802,67 @@ void BulkProcessOrders()
 {
     while (true)
     {
-        Console.Write("Enter a date (dd/mm/yyyy): ");
-        string? inputDate = Console.ReadLine();
-        if (inputDate == null)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Invalid date input.");
-            Console.ResetColor();
-            continue;
-        }
-        bool s = DateTime.TryParseExact(
-                inputDate,
-                "dd/MM/yyyy",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out DateTime date
-            );
-        if (!s)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Invalid date input.");
-            Console.ResetColor();
-            continue;
-        }
+        // Console.Write("Enter a date (dd/mm/yyyy): ");
+        // string? inputDate = Console.ReadLine();
+        // if (inputDate == null)
+        // {
+        //     Console.ForegroundColor = ConsoleColor.DarkRed;
+        //     Console.WriteLine("Invalid date input.");
+        //     Console.ResetColor();
+        //     continue;
+        // }
+        // bool s = DateTime.TryParseExact(
+        //         inputDate,
+        //         "dd/MM/yyyy",
+        //         CultureInfo.InvariantCulture,
+        //         DateTimeStyles.None,
+        //         out DateTime date
+        //     );
+        // if (!s)
+        // {
+        //     Console.ForegroundColor = ConsoleColor.DarkRed;
+        //     Console.WriteLine("Invalid date input.");
+        //     Console.ResetColor();
+        //     continue;
+        // }
+        DateTime today = DateTime.Now;
+        Console.WriteLine($"{today.Day}/{today.Month}/{today.Year}");
         List<Order> orders = [];
         foreach (Restaurant restaurant in restaurants.Values)
         {
             foreach (Order order in restaurant.Orders)
             {
-                if (order.OrderDateTime == date && order.OrderStatus == "Pending")
+                if (order.OrderDateTime.Date == today && order.OrderStatus == "Pending")
                 {
                     orders.Add(order);
                 }
             }
         }
         Console.WriteLine($"Order Queue: {orders.Count}");
+        if (orders.Count == 0)
+        {
+            Console.WriteLine("Queue is empty for today.");
+            return;
+        }
         int rejectedCount = 0, preparingCount = 0;
         foreach (Order order in orders)
         {
             // need check if delivery time is < 1hr
-            order.OrderStatus = "Preparing";
-            preparingCount++;
+            Console.WriteLine($"orderID: {order.OrderId}, orderData: {order.DeliveryDateTime}");
+            if ((order.DeliveryDateTime.TimeOfDay - DateTime.Now.TimeOfDay).TotalHours < 1)
+            {
+                order.OrderStatus = "Rejected";
+                rejectedCount++;
+            }
+            else
+            {
+                order.OrderStatus = "Preparing";
+                preparingCount++;
+            }
         }
         Console.WriteLine($"Orders Processed: {rejectedCount + preparingCount}");
         Console.WriteLine($"Preparing: {preparingCount}, Rejected: {rejectedCount}");
-        // 1 more Console.WriteLine for num auto processed order / all orders
+        Console.WriteLine($"{(((preparingCount + rejectedCount) / orders.Count) * 100).ToString("F2")}");
     }
 }
 
