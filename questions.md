@@ -14,3 +14,5 @@
 7. Are helper functions allowed?
 
 8. For advanced feature b), does the amount that gruberoo earns include the $5 delivery fee or is it just the 30% from the orders (that are delivered)?
+
+9. For advanced features part a, what does it mean when delivery time is < 1 hour?

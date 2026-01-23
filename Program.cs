@@ -798,6 +798,51 @@ void DeleteOrder()
     }
 }
 
+void BulkProcessOrders()
+{
+    while (true)
+    {
+        DateTime today = DateTime.Now;
+        Console.WriteLine($"{today.Day}/{today.Month}/{today.Year}");
+        List<Order> orders = [];
+        foreach (Restaurant restaurant in restaurants.Values)
+        {
+            foreach (Order order in restaurant.Orders)
+            {
+                if (order.OrderDateTime.Date == today && order.OrderStatus == "Pending")
+                {
+                    orders.Add(order);
+                }
+            }
+        }
+        Console.WriteLine($"Order Queue: {orders.Count}");
+        if (orders.Count == 0)
+        {
+            Console.WriteLine("Queue is empty for today.");
+            return;
+        }
+        int rejectedCount = 0, preparingCount = 0;
+        foreach (Order order in orders)
+        {
+            // need check if delivery time is < 1hr
+            Console.WriteLine($"orderID: {order.OrderId}, orderData: {order.DeliveryDateTime}");
+            if ((order.DeliveryDateTime.TimeOfDay - DateTime.Now.TimeOfDay).TotalHours < 1)
+            {
+                order.OrderStatus = "Rejected";
+                rejectedCount++;
+            }
+            else
+            {
+                order.OrderStatus = "Preparing";
+                preparingCount++;
+            }
+        }
+        Console.WriteLine($"Orders Processed: {rejectedCount + preparingCount}");
+        Console.WriteLine($"Preparing: {preparingCount}, Rejected: {rejectedCount}");
+        Console.WriteLine($"{(((preparingCount + rejectedCount) / orders.Count) * 100).ToString("F2")}");
+    }
+}
+
 void DisplayTotalOrderAmount()
 {
     double totalOrderAmount = 0,
@@ -851,6 +896,7 @@ void MainMenu()
         Console.WriteLine("4. Process an order");
         Console.WriteLine("5. Modify an existing order");
         Console.WriteLine("6. Delete an existing order");
+        Console.WriteLine("7. Bulk process orders");
         Console.WriteLine("8. Display total order amount");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
@@ -895,10 +941,15 @@ void MainMenu()
         {
             DeleteOrder();
         }
+        else if (option == 7)
+        {
+            BulkProcessOrders();
+        }
         else if (option == 8)
         {
             DisplayTotalOrderAmount();
         }
+
     }
 }
 
