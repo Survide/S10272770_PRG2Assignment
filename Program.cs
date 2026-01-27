@@ -164,7 +164,7 @@ void LoadOrders()
         {
             string[] s = itemsParsed[i].Split(",");
             string name = s[0];
-            int qty = s.Length == 1 ? 1 : int.Parse(s[1].Trim()); // by default qty = 1
+            int qty = int.Parse(s[1].Trim()); // by default qty = 1
 
             // find the foodItem in restaurant's menu
             bool isFound = false;
