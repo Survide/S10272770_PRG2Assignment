@@ -16,6 +16,7 @@ public class Customer
     {
         Orders.Add(order);
     }
+
     public void DisplayAllOrders()
     {
         foreach (Order order in Orders)
@@ -23,6 +24,7 @@ public class Customer
             Console.WriteLine(order.ToString());
         }
     }
+
     public bool RemoveOrder(Order order)
     {
         bool removed = Orders.Remove(order);
@@ -33,5 +35,4 @@ public class Customer
     {
         return "Email Address: " + EmailAddress + " Customer Name: " + CustomerName;
     }
-
 }
