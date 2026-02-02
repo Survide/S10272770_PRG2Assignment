@@ -789,15 +789,17 @@ void DeleteOrder()
         Console.WriteLine($"Order Status: {order.OrderStatus}");
         Console.Write("Confirm deletion? [Y/N]: ");
         string? confirm = Console.ReadLine();
-        if (confirm == null || !validInputs.Contains(confirm))
+        while (confirm == null || !validInputs.Contains(confirm.ToUpper()))
         {
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("Invalid input.");
             Console.ResetColor();
             Console.WriteLine();
-            continue;
+            Console.Write("Confirm deletion? [Y/N]: ");
+            confirm = Console.ReadLine();
+            // continue;
         }
-        if (confirm == "Y")
+        if (confirm.ToUpper() == "Y")
         {
             order.OrderStatus = "Cancelled";
             refundStack.Push(order);
