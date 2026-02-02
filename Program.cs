@@ -424,7 +424,7 @@ void CreateOrder()
 
     // create csv item
     string orderStr =
-        $"{newOrder.OrderId},{newOrder.FromCustomer.EmailAddress},{newOrder.FromRestaurant.RestaurantId},{date},{time},{address},{newOrder.OrderDateTime:dd/MM/yyyy HH:mm},{newOrder.OrderTotal},{newOrder.OrderStatus},\"{string.Join("|", itemsParsed)}\"";
+        $"{newOrder.OrderId},{newOrder.FromCustomer.EmailAddress},{newOrder.FromRestaurant.RestaurantId},{date},{time},{address},{newOrder.OrderDateTime:dd/MM/yyyy HH:mm},{newOrder.OrderTotal},{newOrder.OrderStatus},\"{string.Join("|", itemsParsed)}\"" + Environment.NewLine;
 
     // append order to orders.csv
     File.AppendAllText("data/orders.csv", orderStr);
@@ -838,7 +838,7 @@ void BulkProcessOrders()
         Console.WriteLine($"Orders Processed: {rejectedCount + preparingCount}");
         Console.WriteLine($"Preparing: {preparingCount}, Rejected: {rejectedCount}");
         Console.WriteLine(
-            $"{(((preparingCount + rejectedCount) / orders.Count) * 100).ToString("F2")}"
+            $"{(((preparingCount + rejectedCount) / orders.Count) * 100).ToString("F2")}% of orders processed."
         );
     }
 }
