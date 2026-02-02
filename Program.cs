@@ -424,7 +424,8 @@ void CreateOrder()
 
     // create csv item
     string orderStr =
-        $"{newOrder.OrderId},{newOrder.FromCustomer.EmailAddress},{newOrder.FromRestaurant.RestaurantId},{date},{time},{address},{newOrder.OrderDateTime:dd/MM/yyyy HH:mm},{newOrder.OrderTotal},{newOrder.OrderStatus},\"{string.Join("|", itemsParsed)}\"" + Environment.NewLine;
+        $"{newOrder.OrderId},{newOrder.FromCustomer.EmailAddress},{newOrder.FromRestaurant.RestaurantId},{date},{time},{address},{newOrder.OrderDateTime:dd/MM/yyyy HH:mm},{newOrder.OrderTotal},{newOrder.OrderStatus},\"{string.Join("|", itemsParsed)}\""
+        + Environment.NewLine;
 
     // append order to orders.csv
     File.AppendAllText("data/orders.csv", orderStr);
