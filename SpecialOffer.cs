@@ -1,4 +1,10 @@
-﻿namespace prg_asg;
+﻿//==========================================================
+// Student Number : S10272770
+// Student Name : Jun Ming
+// Partner Name : Nicole
+//==========================================================
+
+namespace prg_asg;
 
 public class SpecialOffer
 {
