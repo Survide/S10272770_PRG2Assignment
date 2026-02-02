@@ -1,4 +1,10 @@
-﻿namespace prg_asg;
+﻿//==========================================================
+// Student Number : S10271061J
+// Student Name : Nicole Tan
+// Partner Name : Tan Jun Ming
+//==========================================================
+
+namespace S10271061_PRG2Assignment;
 
 public class Menu
 {
@@ -18,11 +24,13 @@ public class Menu
     {
         FoodItems.Add(foodItem);
     }
+
     public bool RemoveFoodItem(FoodItem foodItem)
     {
         bool removed = FoodItems.Remove(foodItem);
         return removed;
     }
+
     public void DisplayFoodItems()
     {
         foreach (FoodItem foodItem in FoodItems)
@@ -30,9 +38,9 @@ public class Menu
             Console.WriteLine(foodItem.ToString());
         }
     }
+
     public override string ToString()
     {
         return "MenuId: " + MenuId + " MenuName: " + MenuName;
     }
-
 }

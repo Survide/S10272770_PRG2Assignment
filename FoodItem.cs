@@ -1,4 +1,10 @@
-﻿namespace prg_asg;
+﻿//==========================================================
+// Student Number : S10271061J
+// Student Name : Nicole Tan
+// Partner Name : Tan Jun Ming
+//==========================================================
+
+namespace S10271061_PRG2Assignment;
 
 public class FoodItem
 {
@@ -17,19 +23,21 @@ public class FoodItem
 
     public FoodItem()
     {
-      ItemName = "Fried carrot cake";
-      ItemDesc = "Fried carrot cake";
-      ItemPrice = 3.5;
-      Customise = "";
+        ItemName = "Fried carrot cake";
+        ItemDesc = "Fried carrot cake";
+        ItemPrice = 3.5;
+        Customise = "";
     }
 
     public override string ToString()
     {
-        return
-          "ItemName: " + ItemName +
-          " ItemDesc: " + ItemDesc +
-          " ItemPrice: " + ItemPrice +
-          " Customise: " + Customise;
+        return "ItemName: "
+            + ItemName
+            + " ItemDesc: "
+            + ItemDesc
+            + " ItemPrice: "
+            + ItemPrice
+            + " Customise: "
+            + Customise;
     }
-
 }

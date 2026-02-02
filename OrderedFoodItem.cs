@@ -1,11 +1,18 @@
-﻿namespace prg_asg;
+﻿//==========================================================
+// Student Number : S10271061J
+// Student Name : Nicole Tan
+// Partner Name : Tan Jun Ming
+//==========================================================
+
+namespace S10271061_PRG2Assignment;
 
 public class OrderedFoodItem : FoodItem
 {
     public int QtyOrdered { get; set; }
     public double SubTotal { get; set; }
 
-    public OrderedFoodItem() : base("Fried carrot cake", "Fried carrot cake", 3.5, "")
+    public OrderedFoodItem()
+        : base("Fried carrot cake", "Fried carrot cake", 3.5, "")
     {
         QtyOrdered = 0;
     }

@@ -1,4 +1,10 @@
-﻿namespace prg_asg;
+﻿//==========================================================
+// Student Number : S10271061J
+// Student Name : Nicole Tan
+// Partner Name : Tan Jun Ming
+//==========================================================
+
+namespace S10271061_PRG2Assignment;
 
 public class Order
 {
