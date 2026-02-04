@@ -225,15 +225,19 @@ void ListAllOrders()
     {
         foreach (Order order in cust.Orders)
         {
-            Console.WriteLine(
-                $"{order.OrderId,-10}"
-                    + $"{order.FromCustomer!.CustomerName,-15}"
-                    + $"{order.FromRestaurant!.RestaurantName,-20}"
-                    + $"{order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm"),-20}"
-                    + // need format
-                    $"${order.OrderTotal.ToString("F2"),-7}"
-                    + order.OrderStatus
-            );
+            if (order.OrderId != 0)
+            {
+                Console.WriteLine(
+                    $"{order.OrderId,-10}"
+                        + $"{order.FromCustomer!.CustomerName,-15}"
+                        + $"{order.FromRestaurant!.RestaurantName,-20}"
+                        + $"{order.FromRestaurant,-20}"
+                        + $"{order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm"),-20}"
+                        + // need format
+                        $"${order.OrderTotal.ToString("F2"),-7}"
+                        + order.OrderStatus
+                );
+            }
         }
     }
 }
