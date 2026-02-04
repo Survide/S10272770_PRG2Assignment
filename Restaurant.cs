@@ -1,7 +1,7 @@
 ﻿//==========================================================
 // Student Number : S10272770
-// Student Name : Jun Ming
-// Partner Name : Nicole
+// Student Name : Tan Jun Ming
+// Partner Name : Nicole Tan
 //==========================================================
 
 namespace prg_asg;
