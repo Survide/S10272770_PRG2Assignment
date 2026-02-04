@@ -23,9 +23,9 @@ public class FoodItem
 
     public FoodItem()
     {
-        ItemName = "Fried carrot cake";
-        ItemDesc = "Fried carrot cake";
-        ItemPrice = 3.5;
+        ItemName = "Placeholder";
+        ItemDesc = "Placeholder";
+        ItemPrice = 0.0;
         Customise = "";
     }
 

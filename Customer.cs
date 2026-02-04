@@ -22,6 +22,7 @@ public class Customer
     public void AddOrder(Order order)
     {
         Orders.Add(order);
+        if (Orders[0].OrderId == 0) Orders.RemoveAt(0);
     }
 
     public void DisplayAllOrders()

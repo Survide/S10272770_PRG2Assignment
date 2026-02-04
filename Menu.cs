@@ -23,6 +23,7 @@ public class Menu
     public void AddFoodItem(FoodItem foodItem)
     {
         FoodItems.Add(foodItem);
+        if (FoodItems[0].ItemName == "Placeholder") FoodItems.RemoveAt(0);
     }
 
     public bool RemoveFoodItem(FoodItem foodItem)
