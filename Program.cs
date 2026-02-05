@@ -448,101 +448,86 @@ void ProcessOrder()
         { "S", "Cancelled" },
         { "D", "Preparing" },
     };
-    while (true)
+    Console.WriteLine("Process Order");
+    Console.WriteLine("=============");
+
+    string restaurantId = Helper.GetValidInput(
+        "Enter Restaurant ID: ",
+        "Invalid Restaurant ID",
+        s => restaurants.ContainsKey(s.ToUpper())
+    ).ToUpper();
+    int orderCounter = 1;
+    while (orderCounter < restaurants[restaurantId].Orders.Count)
     {
-        Console.WriteLine("Process Order");
-        Console.WriteLine("=============");
+        Order order = restaurants[restaurantId].Orders.ElementAt(orderCounter);
 
-        Console.Write("Enter Restaurant ID: ");
-        string? restaurantId = Console.ReadLine();
-        if (restaurantId == null)
+        // Skips if don't have Pending/Cancelled/Preparing
+        if (!optionToStatusDict.ContainsValue(order.OrderStatus!))
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Invalid Restaurand ID");
-            Console.ResetColor();
-            continue;
-        }
-        Console.WriteLine();
-        if (!restaurants.ContainsKey(restaurantId))
-        {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Invalid Restaurant ID");
-            Console.ResetColor();
-            continue;
-        }
-        int orderCounter = 1;
-        while (orderCounter < restaurants[restaurantId].Orders.Count)
-        {
-            Order order = restaurants[restaurantId].Orders.ElementAt(orderCounter);
-
-            // Skips if don't have Pending/Cancelled/Preparing
-            if (!optionToStatusDict.ContainsValue(order.OrderStatus!))
-            {
-                orderCounter++;
-                continue;
-            }
-
-            Console.WriteLine($"Order {order.OrderId}");
-            Console.WriteLine($"Customer {order.FromCustomer!.CustomerName}");
-            Console.WriteLine("Ordered Items: ");
-            int foodItemCounter = 1;
-            foreach (OrderedFoodItem orderedFoodItem in order.OrderedFoodItems)
-            {
-                Console.WriteLine(
-                    $"{foodItemCounter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}"
-                );
-                foodItemCounter++;
-            }
-            Console.WriteLine(
-                $"Delivery date/time: {order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm")}"
-            );
-            Console.WriteLine($"Total Amount: {order.OrderTotal.ToString("F2")}");
-            Console.WriteLine($"Order Status: {order.OrderStatus}");
-
-            string option = Helper.GetValidInput(
-                "[C]onfirm / [R]eject / [S]kip / [D]eliver: ",
-                "Invalid option",
-                s => !optionToStatusDict.ContainsKey(s)
-                );
-
-            // Checks for corresponding status. Checks this first to prevent nested ifs
-            if (order.OrderStatus != optionToStatusDict[option])
-            {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(
-                    $"Order {order.OrderId} does not have status {optionToStatusDict[option]}. Unable to proceed"
-                );
-                Console.ResetColor();
-                Console.WriteLine();
-                continue;
-            }
-            if (option == "C")
-            {
-                order.OrderStatus = "Preparing";
-                Console.WriteLine($"Order {order.OrderId} confirmed. Status: Preparing");
-            }
-            else if (option == "R")
-            {
-                order.OrderStatus = "Rejected";
-                refundStack.Push(order);
-                Console.WriteLine(
-                    $"Order {order.OrderId} rejected. Status: Rejected. ${order.OrderTotal} has been refunded"
-                );
-            }
-            else if (option == "S")
-            {
-                refundStack.Push(order);
-                Console.WriteLine(
-                    $"Order {order.OrderId} skipped. Status: {order.OrderStatus}"
-                );
-            }
-            else if (option == "D")
-            {
-                order.OrderStatus = "Delivered";
-                Console.WriteLine($"Order {order.OrderId} delivered. Status: Delivered");
-            }
             orderCounter++;
+            continue;
         }
+
+        Console.WriteLine($"Order {order.OrderId}");
+        Console.WriteLine($"Customer {order.FromCustomer!.CustomerName}");
+        Console.WriteLine("Ordered Items: ");
+        int foodItemCounter = 1;
+        foreach (OrderedFoodItem orderedFoodItem in order.OrderedFoodItems)
+        {
+            Console.WriteLine(
+                $"{foodItemCounter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}"
+            );
+            foodItemCounter++;
+        }
+        Console.WriteLine(
+            $"Delivery date/time: {order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm")}"
+        );
+        Console.WriteLine($"Total Amount: {order.OrderTotal.ToString("F2")}");
+        Console.WriteLine($"Order Status: {order.OrderStatus}");
+
+        string option = Helper.GetValidInput(
+            "[C]onfirm / [R]eject / [S]kip / [D]eliver: ",
+            "Invalid option",
+            s => optionToStatusDict.ContainsKey(s.ToUpper())
+            ).ToUpper();
+
+        // Checks for corresponding status. Checks this first to prevent nested ifs
+        if (order.OrderStatus != optionToStatusDict[option])
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(
+                $"Order {order.OrderId} does not have status {optionToStatusDict[option]}. Unable to proceed"
+            );
+            Console.ResetColor();
+            Console.WriteLine();
+            continue;
+        }
+        if (option == "C")
+        {
+            order.OrderStatus = "Preparing";
+            Console.WriteLine($"Order {order.OrderId} confirmed. Status: Preparing");
+        }
+        else if (option == "R")
+        {
+            order.OrderStatus = "Rejected";
+            refundStack.Push(order);
+            Console.WriteLine(
+                $"Order {order.OrderId} rejected. Status: Rejected. ${order.OrderTotal} has been refunded"
+            );
+        }
+        else if (option == "S")
+        {
+            refundStack.Push(order);
+            Console.WriteLine(
+                $"Order {order.OrderId} skipped. Status: {order.OrderStatus}"
+            );
+        }
+        else if (option == "D")
+        {
+            order.OrderStatus = "Delivered";
+            Console.WriteLine($"Order {order.OrderId} delivered. Status: Delivered");
+        }
+        orderCounter++;
         Console.WriteLine();
     }
 }
@@ -717,133 +702,104 @@ void ModifyOrder()
 void DeleteOrder()
 {
     List<string> validInputs = ["Y", "N"];
-    while (true)
+    Console.WriteLine("Delete Order");
+    Console.WriteLine("============");
+    string email = Helper.GetValidInput(
+        "Enter Customer Email: ",
+        "Invalid input / Email not found",
+        s => customers.ContainsKey(s));
+    Customer thisCust = customers[email];
+
+    Console.WriteLine("Pending Orders:");
+    // get all pending orders
+    foreach (Order customerOrder in thisCust.Orders)
     {
-        Console.WriteLine("Delete Order");
-        Console.WriteLine("============");
-        string email = Helper.GetValidInput(
-            "Enter Customer Email: ",
-            "Invalid input / Email not found",
-            s => customers.ContainsKey(s));
-        Customer thisCust = customers[email];
-
-        Console.WriteLine("Pending Orders:");
-        foreach (Order customerOrder in thisCust.Orders)
+        if (customerOrder.OrderStatus == "Pending")
         {
-            if (customerOrder.OrderStatus == "Pending")
-            {
-                Console.WriteLine(customerOrder.OrderId);
-            }
+            Console.WriteLine(customerOrder.OrderId);
         }
-        string? orderId = null;
-        while (orderId == null)
-        {
-            Console.Write("Enter Order ID: ");
-            orderId = Console.ReadLine();
-            if (
-                orderId == null ||
-                !int.TryParse(orderId, out _) ||
-                !thisCust.Orders.Any(o => o.OrderId == int.Parse(orderId))
-               )
-            {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine("Invalid Order ID");
-                Console.ResetColor();
-                orderId = null;        
-                continue;
-            }
-        }
-
-        Order order = thisCust.Orders.First(o => o.OrderId == int.Parse(orderId));
-        Console.WriteLine($"Order {order.OrderId}");
-        Console.WriteLine($"Customer {order.FromCustomer!.CustomerName}");
-        Console.WriteLine("Ordered Items: ");
-        int foodItemCounter = 1;
-        foreach (OrderedFoodItem orderedFoodItem in order.OrderedFoodItems)
-        {
-            Console.WriteLine(
-                $"{foodItemCounter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}"
-            );
-            foodItemCounter++;
-        }
-        Console.WriteLine(
-            $"Delivery date/time: {order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm")}"
+    }
+    string orderId = Helper.GetValidInput(
+        "Enter Order ID: ",
+        "Invalid Order ID",
+        s => (int.TryParse(s, out _) && thisCust.Orders.Any(o => o.OrderId == int.Parse(s)))
         );
-        Console.WriteLine($"Total Amount: {order.OrderTotal.ToString("F2")}");
-        Console.WriteLine($"Order Status: {order.OrderStatus}");
-        // Console.Write("Confirm deletion? [Y/N]: ");
-        // string? confirm = Console.ReadLine();
-        // while (confirm == null || !validInputs.Contains(confirm.ToUpper()))
-        // {
-        //     Console.ForegroundColor = ConsoleColor.DarkRed;
-        //     Console.WriteLine("Invalid input.");
-        //     Console.ResetColor();
-        //     Console.WriteLine();
-        //     Console.Write("Confirm deletion? [Y/N]: ");
-        //     confirm = Console.ReadLine();
-        // }
-        string confirm = Helper.GetValidInput(
-            "Confirm deletion? [Y/N]: ",
-            "Invalid input.",
-            s => validInputs.Contains(s)
-            );
-        if (confirm.ToUpper() == "Y")
-        {
-            order.OrderStatus = "Cancelled";
-            refundStack.Push(order);
-            Console.WriteLine(
-                $"Order {order.OrderId} cancelled. Refund of ${order.OrderTotal.ToString("F2")} processed."
-            );
-        }
+    // get order
+    Order order = thisCust.Orders.First(o => o.OrderId == int.Parse(orderId));
+    Console.WriteLine($"Order {order.OrderId}");
+    Console.WriteLine($"Customer {order.FromCustomer!.CustomerName}");
+    Console.WriteLine("Ordered Items: ");
+    int foodItemCounter = 1;
+    foreach (OrderedFoodItem orderedFoodItem in order.OrderedFoodItems)
+    {
+        Console.WriteLine(
+            $"{foodItemCounter}. {orderedFoodItem.ItemName} - {orderedFoodItem.QtyOrdered}"
+        );
+        foodItemCounter++;
+    }
+    Console.WriteLine(
+        $"Delivery date/time: {order.DeliveryDateTime.ToString("dd/MM/yyyy HH:mm")}"
+    );
+    Console.WriteLine($"Total Amount: {order.OrderTotal.ToString("F2")}");
+    Console.WriteLine($"Order Status: {order.OrderStatus}");
+    string confirm = Helper.GetValidInput(
+        "Confirm deletion? [Y/N]: ",
+        "Invalid input.",
+        s => validInputs.Contains(s.ToUpper())
+        );
+    if (confirm.ToUpper() == "Y")
+    {
+        order.OrderStatus = "Cancelled";
+        refundStack.Push(order);
+        Console.WriteLine(
+            $"Order {order.OrderId} cancelled. Refund of ${order.OrderTotal.ToString("F2")} processed."
+        );
     }
 }
 
 void BulkProcessOrders()
 {
-    while (true)
+    DateTime today = DateTime.Now;
+    Console.WriteLine($"Bulk Processing for: {today.Day}/{today.Month}/{today.Year}");
+    List<Order> orders = [];
+    foreach (Restaurant restaurant in restaurants.Values)
     {
-        DateTime today = DateTime.Now;
-        Console.WriteLine($"{today.Day}/{today.Month}/{today.Year}");
-        List<Order> orders = [];
-        foreach (Restaurant restaurant in restaurants.Values)
+        foreach (Order order in restaurant.Orders)
         {
-            foreach (Order order in restaurant.Orders)
+            if (order.OrderDateTime.Date == today.Date && order.OrderStatus == "Pending")
             {
-                if (order.OrderDateTime.Date == today && order.OrderStatus == "Pending")
-                {
-                    orders.Add(order);
-                }
+                orders.Add(order);
             }
         }
-        Console.WriteLine($"Order Queue: {orders.Count}");
-        if (orders.Count == 0)
-        {
-            Console.WriteLine("Queue is empty for today.");
-            return;
-        }
-        int rejectedCount = 0,
-            preparingCount = 0;
-        foreach (Order order in orders)
-        {
-            // need check if delivery time is < 1hr
-            Console.WriteLine($"orderID: {order.OrderId}, orderData: {order.DeliveryDateTime}");
-            if ((order.DeliveryDateTime.TimeOfDay - DateTime.Now.TimeOfDay).TotalHours < 1)
-            {
-                order.OrderStatus = "Rejected";
-                rejectedCount++;
-            }
-            else
-            {
-                order.OrderStatus = "Preparing";
-                preparingCount++;
-            }
-        }
-        Console.WriteLine($"Orders Processed: {rejectedCount + preparingCount}");
-        Console.WriteLine($"Preparing: {preparingCount}, Rejected: {rejectedCount}");
-        Console.WriteLine(
-            $"{(((preparingCount + rejectedCount) / orders.Count) * 100).ToString("F2")}% of orders processed."
-        );
     }
+    Console.WriteLine($"Order Queue: {orders.Count}");
+    if (orders.Count == 0)
+    {
+        Console.WriteLine("Queue is empty for today.");
+        return;
+    }
+    int rejectedCount = 0,
+        preparingCount = 0;
+    foreach (Order order in orders)
+    {
+        // need check if delivery time is < 1hr
+        Console.WriteLine($"orderID: {order.OrderId}, orderData: {order.DeliveryDateTime}");
+        if ((order.DeliveryDateTime.TimeOfDay - DateTime.Now.TimeOfDay).TotalHours < 1)
+        {
+            order.OrderStatus = "Rejected";
+            rejectedCount++;
+        }
+        else
+        {
+            order.OrderStatus = "Preparing";
+            preparingCount++;
+        }
+    }
+    Console.WriteLine($"Orders Processed: {rejectedCount + preparingCount}");
+    Console.WriteLine($"Preparing: {preparingCount}, Rejected: {rejectedCount}");
+    Console.WriteLine(
+        $"{(((preparingCount + rejectedCount) / orders.Count) * 100).ToString("F2")}% of orders processed."
+    );
 }
 
 void DisplayTotalOrderAmount()
